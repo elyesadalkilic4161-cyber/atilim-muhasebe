@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>Atılım Muhasebe</title>
+    <meta name="application-name" content="Atılım Muhasebe">
+    <meta name="apple-mobile-web-app-title" content="Atılım Muhasebe">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="theme-color" content="#C8213A">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='120' fill='%23C8213A'/%3E%3Ctext x='256' y='310' font-family='Arial Black,sans-serif' font-size='240' font-weight='900' text-anchor='middle' fill='white'%3EA%3C/text%3E%3C/svg%3E">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='120' fill='%23C8213A'/%3E%3Ctext x='256' y='310' font-family='Arial Black,sans-serif' font-size='240' font-weight='900' text-anchor='middle' fill='white'%3EA%3C/text%3E%3C/svg%3E">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --red: #C8213A;
+            --red-light: #FDF1F3;
+            --red-mid: #F2B3BC;
+            --orange: #D96200;
+            --orange-light: #FDF3EA;
+            --orange-mid: #F2C090;
+            --bg: #ECEFFE;
+            --white: #FFFFFF;
+            --border: #D2D6F0;
+            --text: #0A0C20;
+            --muted: #6366889;
+            --accent: var(--red);
+            --accent-light: var(--red-light);
+            --accent-mid: var(--red-mid);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+        }
+
+        .app {
+            width: 100%;
+            max-width: 430px;
+            min-height: 100vh;
+            padding-bottom: 50px;
+        }
+
+        .header {
+            padding: 56px 24px 24px;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .brand-label {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+
+        .date-chip {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--muted);
+            background: var(--white);
+            padding: 6px 14px;
+            border-radius: 20px;
+            border: 1.5px solid var(--border);
+        }
+
+        .page-title {
+            font-size: 34px;
+            font-weight: 800;
+            line-height: 1.1;
+            letter-spacing: -0.5px;
+        }
+
+        .page-title em {
+            font-style: normal;
+            color: var(--accent);
+            transition: color 0.4s;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            padding: 0 20px;
+            margin-bottom: 18px;
+        }
+
+        .tab {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 15px 10px;
+            border-radius: 18px;
+            background: var(--white);
+            border: 2px solid var(--border);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--muted);
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .tab.active-m {
+            background: var(--red-light);
+            border-color: var(--red);
+            color: var(--red);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px -4px rgba(200,33,58,0.28);
+        }
+
+        .tab.active-k {
+            background: var(--orange-light);
+            border-color: var(--orange);
+            color: var(--orange);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px -4px rgba(217,98,0,0.28);
+        }
+
+        .card {
+            margin: 0 20px;
+            background: var(--white);
+            border-radius: 28px;
+            padding: 28px 22px;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.055);
+            border: 2px solid var(--border);
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .card.hot-m { border-color: var(--red); box-shadow: 0 6px 30px rgba(200,33,58,0.15); }
+        .card.hot-k { border-color: var(--orange); box-shadow: 0 6px 30px rgba(217,98,0,0.15); }
+
+        .field { margin-bottom: 16px; }
+
+        .field-label {
+            display: block;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 8px;
+        }
+
+        .input-wrap { position: relative; }
+
+        .input-wrap .sym {
+            position: absolute;
+            left: 17px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 21px;
+            font-weight: 700;
+            color: var(--muted);
+            pointer-events: none;
+            transition: color 0.25s;
+        }
+
+        .input-wrap:focus-within .sym { color: var(--accent); }
+
+        .field input {
+            width: 100%;
+            background: var(--bg);
+            border: 2px solid transparent;
+            border-radius: 16px;
+            padding: 16px 18px 16px 42px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--text);
+            transition: all 0.2s;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .field input::placeholder { color: #CDD0E0; font-weight: 600; }
+
+        .field input:focus {
+            outline: none;
+            background: var(--white);
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px var(--accent-light);
+        }
+
+        .sep {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 2px 0 16px;
+        }
+
+        .sep-line { flex: 1; height: 1px; background: var(--border); }
+        .sep-txt { font-size: 10px; font-weight: 800; letter-spacing: 2.5px; color: var(--muted); }
+
+        .result {
+            background: var(--bg);
+            border-radius: 18px;
+            padding: 18px 20px;
+            margin: 6px 0 20px;
+            border: 2px dashed var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+        }
+
+        .result.lit-m { background: var(--red-light); border: 2px solid var(--red-mid); }
+        .result.lit-k { background: var(--orange-light); border: 2px solid var(--orange-mid); }
+
+        .res-label {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--muted);
+            transition: color 0.3s;
+        }
+
+        .result.lit-m .res-label { color: var(--red); }
+        .result.lit-k .res-label { color: var(--orange); }
+
+        .res-val {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--muted);
+            letter-spacing: -1px;
+            transition: color 0.3s;
+        }
+
+        .result.lit-m .res-val { color: var(--red); }
+        .result.lit-k .res-val { color: var(--orange); }
+
+        .btn {
+            width: 100%;
+            padding: 20px;
+            border: none;
+            border-radius: 18px;
+            color: #fff;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 16px;
+            font-weight: 800;
+            cursor: pointer;
+            display: none;
+            transition: transform 0.15s;
+            animation: popIn 0.3s cubic-bezier(0.34,1.56,0.64,1);
+        }
+
+        .btn.bm { background: linear-gradient(135deg, #C8213A, #A01028); box-shadow: 0 10px 28px -4px rgba(200,33,58,0.48); }
+        .btn.bk { background: linear-gradient(135deg, #D96200, #B04800); box-shadow: 0 10px 28px -4px rgba(217,98,0,0.48); }
+        .btn:active { transform: scale(0.97); }
+
+        @keyframes popIn {
+            from { transform: scale(0.88); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .spin {
+            display: inline-block;
+            width: 17px; height: 17px;
+            border: 2.5px solid rgba(255,255,255,0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: rot 0.65s linear infinite;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+
+        @keyframes rot { to { transform: rotate(360deg); } }
+
+        .log-wrap {
+            margin: 22px 20px 0;
+        }
+
+        .log-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 4px;
+            margin-bottom: 12px;
+        }
+
+        .log-ttl {
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+
+        .log-sum {
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--text);
+        }
+
+        .log-items { display: flex; flex-direction: column; gap: 8px; }
+
+        .log-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--white);
+            border-radius: 16px;
+            padding: 14px 16px;
+            border: 1.5px solid var(--border);
+            animation: up 0.35s cubic-bezier(0.34,1.56,0.64,1);
+        }
+
+        @keyframes up {
+            from { transform: translateY(10px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+        .dot.m { background: var(--red); }
+        .dot.k { background: var(--orange); }
+
+        .row-type { flex: 1; font-size: 14px; font-weight: 600; color: var(--text); }
+        .row-time { font-size: 12px; font-weight: 500; color: var(--muted); }
+        .row-amt { font-size: 16px; font-weight: 800; letter-spacing: -0.5px; }
+        .row-amt.m { color: var(--red); }
+        .row-amt.k { color: var(--orange); }
+
+        .empty-log {
+            background: var(--white);
+            border-radius: 16px;
+            border: 2px dashed var(--border);
+            text-align: center;
+            padding: 24px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--muted);
+        }
+
+        #toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(70px);
+            background: var(--text);
+            color: #fff;
+            padding: 13px 24px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 700;
+            white-space: nowrap;
+            z-index: 999;
+            opacity: 0;
+            transition: all 0.35s cubic-bezier(0.34,1.56,0.64,1);
+            pointer-events: none;
+        }
+
+        #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    </style>
+<script>
+// PWA Manifest injection
+const manifestData = {
+  name: "Atılım Muhasebe",
+  short_name: "Atılım",
+  start_url: ".",
+  display: "standalone",
+  background_color: "#ECEFFE",
+  theme_color: "#C8213A",
+  icons: [{
+    src: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='120' fill='%23C8213A'/%3E%3Ctext x='256' y='320' font-family='Arial Black' font-size='260' font-weight='900' text-anchor='middle' fill='white'%3EA%3C/text%3E%3C/svg%3E",
+    sizes: "512x512",
+    type: "image/svg+xml",
+    purpose: "any maskable"
+  }]
+};
+const blob = new Blob([JSON.stringify(manifestData)], {type: 'application/json'});
+const manifestURL = URL.createObjectURL(blob);
+const ml = document.createElement('link');
+ml.rel = 'manifest';
+ml.href = manifestURL;
+document.head.appendChild(ml);
+</script>
+</head>
+<body>
+
+<div id="toast"></div>
+
+<div class="app">
+    <div class="header">
+        <div class="header-top">
+            <div class="brand-label">Atılım Muhasebe</div>
+            <div class="date-chip" id="date-chip"></div>
+        </div>
+        <div class="page-title">Dijital<br><em id="mode-word">Market</em></div>
+    </div>
+
+    <div class="tabs">
+        <div id="tab-m" class="tab active-m" onclick="setMode('market')">🛒 Market</div>
+        <div id="tab-k" class="tab" onclick="setMode('kahvaltı')">🍳 Kahvaltı</div>
+    </div>
+
+    <div class="card" id="card">
+        <div id="mf">
+            <div class="field">
+                <label class="field-label">Alış Fiyatı</label>
+                <div class="input-wrap">
+                    <input type="number" id="m-a" placeholder="0" inputmode="decimal" pattern="[0-9]*" oninput="calc()">
+                    <span class="sym">₺</span>
+                </div>
+            </div>
+            <div class="sep"><div class="sep-line"></div><div class="sep-txt">SATIŞ</div><div class="sep-line"></div></div>
+            <div class="field">
+                <label class="field-label">Satış Fiyatı</label>
+                <div class="input-wrap">
+                    <input type="number" id="m-s" placeholder="0" inputmode="decimal" pattern="[0-9]*" oninput="calc()">
+                    <span class="sym">₺</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="kf" style="display:none;">
+            <div class="field">
+                <label class="field-label">Kahvaltı Tutarı</label>
+                <div class="input-wrap">
+                    <input type="number" id="k-t" placeholder="0" inputmode="decimal" pattern="[0-9]*" oninput="calc()">
+                    <span class="sym">₺</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="result" id="res">
+            <span class="res-label" id="res-lbl">Net Kazanç</span>
+            <span class="res-val" id="res-val">0.00</span>
+        </div>
+
+        <button class="btn bm" id="btn" onclick="doSave()">Tabloya Kaydet</button>
+    </div>
+
+    <div class="log-wrap">
+        <div class="log-head">
+            <span class="log-ttl">Bugünkü İşlemler</span>
+            <span class="log-sum" id="log-sum"></span>
+        </div>
+        <div class="log-items" id="log-items">
+            <div class="empty-log">Henüz işlem yok</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const URL_ = "https://script.google.com/macros/s/AKfycbzm4WlIP796CheeFfA_pqnjSMRgrR0dymPCLSDeMpH-6oz5PvfgjBmmgUAGxAwTLoU_8Q/exec";
+    let mode = 'market';
+    let log = [];
+
+    const d = new Date();
+    const days = ['Paz','Pzt','Sal','Çar','Per','Cum','Cmt'];
+    const todayStr = d.getFullYear() + '-' +
+        String(d.getMonth()+1).padStart(2,'0') + '-' +
+        String(d.getDate()).padStart(2,'0');
+
+    document.getElementById('date-chip').textContent =
+        days[d.getDay()] + ' ' + d.getDate() + '.' +
+        String(d.getMonth()+1).padStart(2,'0') + '.' + d.getFullYear();
+
+    // LocalStorage: bugüne ait kayıtları yükle, eskiyse temizle
+    function loadLog() {
+        try {
+            const saved = localStorage.getItem('atilim_log');
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                if (parsed.date === todayStr) {
+                    log = parsed.items || [];
+                } else {
+                    localStorage.removeItem('atilim_log'); // Eski gün, temizle
+                    log = [];
+                }
+            }
+        } catch(e) { log = []; }
+        renderLog();
+    }
+
+    function saveLog() {
+        try {
+            localStorage.setItem('atilim_log', JSON.stringify({ date: todayStr, items: log }));
+        } catch(e) {}
+    }
+
+    loadLog();
+
+    function setMode(m) {
+        mode = m;
+        const isM = m === 'market';
+        document.documentElement.style.setProperty('--accent', isM ? '#C8213A' : '#D96200');
+        document.documentElement.style.setProperty('--accent-light', isM ? '#FDF1F3' : '#FDF3EA');
+        document.documentElement.style.setProperty('--accent-mid', isM ? '#F2B3BC' : '#F2C090');
+        document.getElementById('tab-m').className = 'tab' + (isM ? ' active-m' : '');
+        document.getElementById('tab-k').className = 'tab' + (!isM ? ' active-k' : '');
+        document.getElementById('mf').style.display = isM ? 'block' : 'none';
+        document.getElementById('kf').style.display = !isM ? 'block' : 'none';
+        document.getElementById('mode-word').textContent = isM ? 'Market' : 'Kahvaltı';
+        document.getElementById('res-lbl').textContent = isM ? 'Net Kazanç' : 'Toplam Tutar';
+        document.getElementById('btn').className = 'btn ' + (isM ? 'bm' : 'bk');
+        document.getElementById('res').className = 'result';
+        document.getElementById('res-val').textContent = '0.00';
+        document.getElementById('card').className = 'card';
+        document.getElementById('btn').style.display = 'none';
+        ['m-a','m-s','k-t'].forEach(id => { const e = document.getElementById(id); if(e) e.value=''; });
+        calc();
+    }
+
+    function calc() {
+        const isM = mode === 'market';
+        let val = isM
+            ? (parseFloat(document.getElementById('m-s').value)||0) - (parseFloat(document.getElementById('m-a').value)||0)
+            : (parseFloat(document.getElementById('k-t').value)||0);
+
+        document.getElementById('res-val').textContent = val.toFixed(2);
+        const res = document.getElementById('res');
+        const card = document.getElementById('card');
+        const btn = document.getElementById('btn');
+
+        if (val !== 0) {
+            res.className = 'result ' + (isM ? 'lit-m' : 'lit-k');
+            card.className = 'card ' + (isM ? 'hot-m' : 'hot-k');
+            btn.style.display = 'block';
+        } else {
+            res.className = 'result';
+            card.className = 'card';
+            btn.style.display = 'none';
+        }
+    }
+
+    function doSave() {
+        const btn = document.getElementById('btn');
+        const isM = mode === 'market';
+        let v1 = isM ? document.getElementById('m-a').value : document.getElementById('k-t').value;
+        let v2 = isM ? document.getElementById('m-s').value : 0;
+        let dispVal = isM
+            ? (parseFloat(v2||0)-parseFloat(v1||0)).toFixed(2)
+            : parseFloat(v1||0).toFixed(2);
+
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spin"></span>Yazılıyor...';
+
+        fetch(`${URL_}?tip=${encodeURIComponent(mode)}&v1=${v1}&v2=${v2}`, {method:'GET',mode:'no-cors'})
+        .then(() => {
+            const t = new Date();
+            const ts = String(t.getHours()).padStart(2,'0')+':'+String(t.getMinutes()).padStart(2,'0');
+            log.unshift({type: mode, val: dispVal, time: ts});
+            saveLog();
+            renderLog();
+            toast(isM ? '✅ Market kaydedildi!' : '✅ Kahvaltı kaydedildi!');
+            setTimeout(() => {
+                btn.disabled = false;
+                btn.innerHTML = 'Tabloya Kaydet';
+                btn.style.display = 'none';
+                document.getElementById('res').className = 'result';
+                document.getElementById('res-val').textContent = '0.00';
+                document.getElementById('card').className = 'card';
+                ['m-a','m-s','k-t'].forEach(id => { const e=document.getElementById(id); if(e) e.value=''; });
+            }, 900);
+        }).catch(() => {
+            toast('❌ Hata oluştu!');
+            btn.disabled = false;
+            btn.innerHTML = 'Tekrar Dene';
+        });
+    }
+
+    function renderLog() {
+        const items = document.getElementById('log-items');
+        const sum = document.getElementById('log-sum');
+        if (!log.length) {
+            items.innerHTML = '<div class="empty-log">Henüz işlem yok</div>';
+            sum.textContent = '';
+            return;
+        }
+        const total = log.reduce((s,i) => s + parseFloat(i.val), 0);
+        sum.textContent = '₺ ' + total.toFixed(2);
+        items.innerHTML = log.map(i => `
+            <div class="log-row">
+                <div class="dot ${i.type==='market'?'m':'k'}"></div>
+                <div class="row-type">${i.type==='market'?'Market':'Kahvaltı'}</div>
+                <div class="row-time">${i.time}</div>
+                <div class="row-amt ${i.type==='market'?'m':'k'}">₺ ${i.val}</div>
+            </div>
+        `).join('');
+    }
+
+    function toast(msg) {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 2500);
+    }
+</script>
+</body>
+</html>
